@@ -1,20 +1,20 @@
 const CACHE_KEY = "titan";
 
 const STATIC_ASSETS = [
-  // "/",
-  // "/index.html",
-  // "/pages/exercises.html",
-  // "/pages/profile.html",
-  // "/pages/offline.html",
-  // "/pages/404.html",
-  // "/js/app.js",
-  // "/js/worker.js",
-  // "/css/style.css",
-  // "/css/exercises.css",
-  // "/css/profile.css",
-  // "/css/offline.css",
-  // "/css/404.css",
-  // "/images/icons/icon-72x72.png",
+  "/",
+  "index.html",
+  "pages/exercises.html",
+  "pages/profile.html",
+  "pages/offline.html",
+  "pages/404.html",
+  "js/app.js",
+  "js/worker.js",
+  "css/style.css",
+  "css/exercises.css",
+  "css/profile.css",
+  "css/offline.css",
+  "css/404.css",
+  "images/icons/icon-72x72.png",
 ];
 
 self.addEventListener("install", (e) => {
@@ -65,8 +65,8 @@ self.addEventListener("fetch", (e) => {
           return networkRes;
         }
 
-        // let cache = await caches.open(CACHE_KEY);
-        // cache.put(e.request, networkRes.clone());
+        let cache = await caches.open(CACHE_KEY);
+        cache.put(e.request, networkRes.clone());
 
         return networkRes;
       } catch (err) {
