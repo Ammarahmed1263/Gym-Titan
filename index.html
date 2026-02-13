@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gym App</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/app.js" defer></script>
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- for ios -->
+    <link rel="apple-touch-icon" href="images/icons/icon-48x48.png" />
+    <meta name="apple-mobile-web-app-status-bar" content="#0a0a0a" />
+
+    <meta name="theme_color" content="#1a1a1a" />
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="logo">
+          <img src="./images/icons/icon-72x72.png" alt="Titan Logo" />
+        </div>
+
+        <nav class="nav-wrapper">
+          <ul class="main-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/pages/profile.html">Profile</a></li>
+            <li><a href="/pages/exercises.html">Exercises</a></li>
+          </ul>
+        </nav>
+        <button type="button" id="install">Secure App</button>
+      </aside>
+
+      <main class="main-content">
+        <section class="calculator-card">
+          <h2>1 Rep Max(RM) Estimator</h2>
+
+          <form id="rm-form">
+            <input
+              type="number"
+              id="weight-input"
+              placeholder="Weight (kg)"
+              min="1"
+              required
+            />
+            <input
+              type="number"
+              id="reps-input"
+              placeholder="Reps"
+              min="1"
+              required
+            />
+            <button type="submit">Calculate</button>
+          </form>
+          <div id="rm-result" class="result-display">
+            Result will appear here...
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
