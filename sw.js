@@ -1,4 +1,4 @@
-const CACHE_KEY = "titan";
+const CACHE_KEY = "titan-v1";
 
 const STATIC_ASSETS = [
   "/",
@@ -9,6 +9,9 @@ const STATIC_ASSETS = [
   "pages/404.html",
   "js/app.js",
   "js/worker.js",
+  "js/db.js",
+  "js/idb.js",
+  "js/offline.js",
   "css/style.css",
   "css/exercises.css",
   "css/profile.css",
