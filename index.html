@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gym Titan</title>
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/shared.css" />
+
+    <script src="js/shared.js" defer></script>
     <script src="js/app.js" defer></script>
+
     <link rel="manifest" href="manifest.json" />
 
     <!-- for ios -->
@@ -15,48 +19,31 @@
     <meta name="theme_color" content="#1a1a1a" />
   </head>
   <body>
-    <div class="container">
-      <aside class="sidebar">
-        <div class="logo">
-          <img src="./images/icons/icon-72x72.png" alt="Gym Titan Logo" />
-        </div>
+    <main class="main-content">
+      <section class="calculator-card">
+        <h2>One-Rep Max(1RM) Estimator</h2>
 
-        <nav class="nav-wrapper">
-          <ul class="main-nav">
-            <li><a href="./index.html">Home</a></li>
-            <li><a href="pages/profile.html">Profile</a></li>
-            <li><a href="pages/exercises.html">Exercises</a></li>
-          </ul>
-        </nav>
-        <button type="button" id="install">Secure App</button>
-      </aside>
-
-      <main class="main-content">
-        <section class="calculator-card">
-          <h2>1 Rep Max(RM) Estimator</h2>
-
-          <form id="rm-form">
-            <input
-              type="number"
-              id="weight-input"
-              placeholder="Weight (kg)"
-              min="1"
-              required
-            />
-            <input
-              type="number"
-              id="reps-input"
-              placeholder="Reps"
-              min="1"
-              required
-            />
-            <button type="submit">Calculate</button>
-          </form>
-          <div id="rm-result" class="result-display">
+        <form id="rm-form">
+          <input
+            type="number"
+            id="weight-input"
+            placeholder="Weight (kg/lbs)"
+            min="1"
+            required
+          />
+          <input
+            type="number"
+            id="reps-input"
+            placeholder="Reps"
+            min="1"
+            required
+          />
+          <button type="submit">Calculate</button>
+        </form>
+        <div id="rm-result" class="result-display">
             Result will appear here...
-          </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+    </main>
   </body>
 </html>
