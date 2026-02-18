@@ -5,6 +5,11 @@
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  background-color: #0a0a0a;
+  color: #ffffff;
   font-family:
     system-ui,
     -apple-system,
@@ -16,21 +21,14 @@ body {
     Cantarell,
     "Open Sans",
     "Helvetica Neue",
-    sans-serif,
-    system-ui,
     sans-serif;
-  display: flex;
-  flex-direction: column;
-  min-height: 100svh;
-  background-color: #0a0a0a;
-  color: #ffffff;
 }
 
 input {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 1rem 1.25rem;
   border-radius: 8px;
-  border: 1px solid #2e2e2e;
+  border: none;
   color: inherit;
   font-family: inherit;
   font-size: inherit;
@@ -39,6 +37,18 @@ input {
 input:focus {
   outline: none;
   box-shadow: 0 0 0 2px #d32f2f;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+
+  filter: invert(24%) sepia(56%) saturate(4787%) hue-rotate(349deg)
+    brightness(90%) contrast(92%);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(24%) sepia(56%) saturate(4787%) hue-rotate(349deg)
+    brightness(110%) contrast(92%);
 }
 
 button {
@@ -50,8 +60,8 @@ button {
   font-size: 1.2rem;
   letter-spacing: 1px;
   font-family: inherit;
-  color: inherit;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 button:hover {
@@ -70,55 +80,42 @@ button:hover {
 
 .sidebar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  padding: 0.8rem 1rem;
-  background-color: #1a1a1a;
+  background-color: #181818;
+  height: 4rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #232323;
+  flex-shrink: 0;
+}
+
+.sidebar-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-block;
+  vertical-align: bottom;
+  color: #9ca3af;
+  transition: color 0.2s;
 }
 
 .logo {
-  max-width: 48px;
-  max-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }
 
 .logo img {
-  max-width: 100%;
-  height: auto;
+  width: 2rem;
+  height: 2rem;
+  object-fit: contain;
 }
 
-.unit-toggle {
-  display: flex;
-  gap: 0;
-}
-
-.unit-btn {
-  padding: 0.5rem 0.75rem;
-  background-color: rgba(255, 255, 255, 0.1);
-  color: #a1a1a1;
-  border: 1px solid #2e2e2e;
-  font-size: 0.75rem;
-  font-weight: 600;
+.logo-text {
+  font-size: 1.3rem;
+  font-weight: 700;
   text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.unit-btn:first-child {
-  border-radius: 6px 0 0 6px;
-  border-right: none;
-}
-
-.unit-btn:last-child {
-  border-radius: 0 6px 6px 0;
-}
-
-.unit-btn.active {
-  background-color: #d32f2f;
-  color: white;
-  border-color: #d32f2f;
-}
-
-.unit-btn:hover:not(.active) {
-  background-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  letter-spacing: 0.05em;
 }
 
 .nav-wrapper {
@@ -126,13 +123,14 @@ button:hover {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: #1a1a1a;
-  border-top: 1px solid #2e2e2e;
+  background-color: #181818;
+  border-top: 1px solid #232323;
   z-index: 1000;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .main-nav {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
@@ -143,73 +141,189 @@ button:hover {
 }
 
 .main-nav a {
-  display: block;
-  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.75rem;
   text-decoration: none;
-  color: white;
-  padding: 1.5rem 0;
+  color: #9ca3af;
+  padding: 0.75rem 0 0.5rem 0;
   text-align: center;
+  gap: 0.25rem;
+  transition: color 0.2s;
+}
+
+.main-nav a span {
+  font-size: 0.75rem;
 }
 
 .main-nav a:hover {
-  background-color: #ff5252;
+  color: #ff5252;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.main-nav a:hover .sidebar-icon {
+  color: #ff5252;
+}
+
+.main-nav a.active,
+.main-nav a:active {
+  color: #d32f2f;
+  background-color: unset;
+}
+
+.main-nav a.active .sidebar-icon,
+.main-nav a:active .sidebar-icon {
+  color: #d32f2f;
 }
 
 #install {
   display: none;
-  background-color: #d32f2f;
+  background-color: transparent;
   border: none;
   border-radius: 4px;
-  color: white;
-  padding: 0.7rem 1rem;
+  padding: 0.6rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #9ca3af;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+#install:hover {
+  color: #d32f2f;
+}
+
+#install:hover .sidebar-icon {
+  color: #d32f2f;
+}
+
+.install-text {
+  display: none;
+}
+
+.page-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
 }
 
 @media (min-width: 768px) {
   body {
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 220px 1fr;
+    grid-template-rows: 100vh;
     min-height: 100vh;
   }
 
   .sidebar {
+    grid-column: 1;
+    grid-row: 1;
     height: 100vh;
     position: sticky;
     top: 0;
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     justify-content: flex-start;
-    padding: 0.5rem 0 2rem 0;
+    padding: 2rem 1.2rem 1.5rem;
+    border-bottom: none;
+    border-right: 1px solid #232323;
+    background-color: #181818;
+    gap: 2rem;
   }
 
   .logo {
-    max-width: 72px;
-    max-height: 72px;
-    margin: 1rem auto 0.5rem auto;
+    align-self: flex-start;
+    margin-bottom: 1rem;
   }
 
-  .unit-toggle {
-    display: flex;
-    justify-content: center;
-    margin: 0 auto 1.5rem auto;
-    width: fit-content;
+  .logo img {
+    width: 2.5rem;
+    height: 2.5rem;
   }
 
-  .unit-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
+  .logo-text {
+    font-size: 1.5rem;
   }
 
   .nav-wrapper {
     position: static;
+    border-top: none;
+    padding-bottom: 0;
   }
 
   .main-nav {
     flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .main-nav li {
+    flex: none;
+  }
+
+  .main-nav a {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    gap: 0.75rem;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  .main-nav a span {
+    font-size: 0.95rem;
+  }
+
+  .main-nav a.active,
+  .main-nav a:active {
+    background-color: rgba(255, 255, 255, 0.05);
   }
 
   #install {
-    display: block;
-    margin: 0 1rem;
+    display: flex;
+    width: 100%;
     margin-top: auto;
+    padding: 0.75rem 1rem;
+    justify-content: flex-start;
+    color: #9ca3af;
+    font-size: 0.95rem;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  #install:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  #install:hover .sidebar-icon {
+    color: #fff;
+  }
+
+  .install-text {
+    display: inline;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  .page-area {
+    grid-column: 2;
+    grid-row: 1;
+    height: 100vh;
+    padding-bottom: 0;
   }
 }
