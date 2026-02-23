@@ -7,7 +7,7 @@ self.onmessage = function (e) {
   }
 
   if (reps === 1) {
-    return {
+    self.postMessage({
       brzycki: weight,
       epley: weight,
       lander: weight,
@@ -17,7 +17,8 @@ self.onmessage = function (e) {
       max: weight,
       range: 0,
       confidence: "very-high",
-    };
+    });
+    return;
   }
 
   const brzycki = weight / (1.0278 - 0.0278 * reps);
