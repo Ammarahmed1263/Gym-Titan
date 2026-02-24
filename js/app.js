@@ -1,40 +1,39 @@
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("../sw.js")
+      .register("/sw.js")
       .then((reg) => console.log("service worker registered", reg))
       .catch((err) => console.log("worker registration failed", err));
   });
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+  const rmWorker = new Worker("js/worker.js");
+  const rmForm = document.querySelector("#rm-form");
+  const rmResult = document.querySelector("#rm-result");
 
-const rmWorker = new Worker("js/worker.js");
-const rmForm = document.querySelector("#rm-form");
-const rmResult = document.querySelector("#rm-result");
+  rmForm.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-rmForm.addEventListener("submit", (e) => {
-  e.preventDefault();
+    const weight = document.querySelector("#weight-input").value;
+    const reps = document.querySelector("#reps-input").value;
 
-  const weight = document.querySelector("#weight-input").value;
-  const reps = document.querySelector("#reps-input").value;
+    rmWorker.postMessage({ weight, reps });
+  });
 
-  rmWorker.postMessage({ weight, reps });
-});
+  rmWorker.onmessage = function (e) {
+    const result = e.data;
 
-rmWorker.onmessage = function (e) {
-  const result = e.data;
-  console.log("Calculated 1RM:", result);
+    const confidenceColors = {
+      "very-high": "#22c55e",
+      high: "#3b82f6",
+      moderate: "#f59e0b",
+      low: "#ef4444",
+    };
 
-  const confidenceColors = {
-    "very-high": "#22c55e",
-    high: "#3b82f6",
-    moderate: "#f59e0b",
-    low: "#ef4444",
-  };
+    const confidenceColor = confidenceColors[result.confidence] || "#6b7280";
 
-  const confidenceColor = confidenceColors[result.confidence] || "#6b7280";
-
-  rmResult.innerHTML = `
+    rmResult.innerHTML = `
     <div class="result-header">
       <div class="main-result">
         <span class="result-label">Estimated 1RM</span>
@@ -88,4 +87,5 @@ rmWorker.onmessage = function (e) {
         : ""
     }
   `;
-};
+  };
+});
