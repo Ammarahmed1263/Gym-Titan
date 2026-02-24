@@ -12,3 +12,54 @@ body {
   background-color: #0a0a0a;
   color: #ffffff;
 }
+
+header {
+  margin-bottom: 1.5rem;
+}
+
+#workout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border: 1px solid #2e2e2e;
+  background-color: #1a1a1a;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.input-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.input-group input {
+  flex: 1;
+}
+
+#workout-log {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 1rem;
+}
+
+.empty-text {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #9ca3af;
+}
+
+#workout-form button[type="submit"] {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.log-set-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #fff;
+}
