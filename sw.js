@@ -1,25 +1,25 @@
-const CACHE_KEY = "titan";
+const CACHE_KEY = "titan-v1";
 
 const STATIC_ASSETS = [
-  "/",
-  "/index.html",
-  "/pages/exercises.html",
-  "/pages/profile.html",
-  "/pages/offline.html",
-  "/pages/404.html",
-  "/js/app.js",
-  "/js/worker.js",
-  "/js/db.js",
-  "/js/idb.js",
-  "/js/shared.js",
-  "/js/offline.js",
-  "/css/style.css",
-  "/css/exercises.css",
-  "/css/profile.css",
-  "/css/shared.css",
-  "/css/offline.css",
-  "/css/404.css",
-  "/images/icons/icon-72x72.png",
+  "./",
+  "./index.html",
+  "./pages/exercises.html",
+  "./pages/profile.html",
+  "./pages/offline.html",
+  "./pages/404.html",
+  "./js/app.js",
+  "./js/worker.js",
+  "./js/db.js",
+  "./js/idb.js",
+  "./js/shared.js",
+  "./js/offline.js",
+  "./css/style.css",
+  "./css/exercises.css",
+  "./css/profile.css",
+  "./css/shared.css",
+  "./css/offline.css",
+  "./css/404.css",
+  "./images/icons/icon-72x72.png",
 ];
 
 self.addEventListener("install", (e) => {
@@ -65,7 +65,7 @@ self.addEventListener("fetch", (e) => {
 
         if (networkRes.status === 404) {
           if (e.request.mode === "navigate") {
-            return caches.match("/pages/404.html");
+            return caches.match("./pages/404.html");
           }
           return networkRes;
         }
@@ -76,7 +76,7 @@ self.addEventListener("fetch", (e) => {
         return networkRes;
       } catch (err) {
         if (e.request.mode === "navigate") {
-          return caches.match("/pages/offline.html");
+          return caches.match("./pages/offline.html");
         }
         return new Response("Network error", {
           status: 408,
