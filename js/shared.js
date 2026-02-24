@@ -1,5 +1,10 @@
 import { dbService } from "./db.js";
 
+// Detect if we're running in a subdirectory (like on GitHub Pages)
+const BASE_PATH = window.location.pathname.includes("/Gym-Titan")
+  ? "/Gym-Titan"
+  : "";
+
 function addInstallLogic() {
   let installPrompt = null;
   const installButton = document.querySelector("#install");
@@ -29,13 +34,18 @@ function initRouter() {
     if (link) {
       event.preventDefault();
 
-      const url = link.getAttribute("href");
-      navigateTo(url);
+      let url = link.getAttribute("href");
+
+      if (!url.startsWith("/")) {
+        url = "/" + url;
+      }
+
+      navigateTo(BASE_PATH + url);
     }
   });
 
   window.addEventListener("popstate", () => {
-    navigateTo(window.location.pathname);
+    navigateTo(window.location.pathname, false);
   });
 }
 
@@ -43,7 +53,14 @@ async function navigateTo(url, addHistory = true) {
   const appContainer = document.querySelector("#app");
 
   try {
-    const fetchUrl = url.startsWith("/") ? url : "/" + url;
+    // If we're navigating to a root-like path, ensure it has the BASE_PATH
+    let fetchUrl = url.startsWith(BASE_PATH) ? url : BASE_PATH + url;
+
+    // Safety check: don't double up base path
+    if (BASE_PATH && fetchUrl.startsWith(BASE_PATH + BASE_PATH)) {
+      fetchUrl = fetchUrl.replace(BASE_PATH + BASE_PATH, BASE_PATH);
+    }
+
     const response = await fetch(fetchUrl);
     const html = await response.text();
 
@@ -78,12 +95,15 @@ function updateActiveLink(url) {
   const currentPath = url.split("?")[0];
 
   links.forEach((link) => {
-    const linkPath = link.getAttribute("href");
+    let linkPath = link.getAttribute("href");
+    if (!linkPath.startsWith("/")) linkPath = "/" + linkPath;
+
+    const fullLinkPath = BASE_PATH + linkPath;
 
     const isActive =
-      currentPath === linkPath ||
-      (currentPath === "/" && linkPath === "/index.html") ||
-      (currentPath === "/index.html" && linkPath === "/");
+      currentPath === fullLinkPath ||
+      (currentPath === BASE_PATH + "/" && linkPath === "/index.html") ||
+      (currentPath === BASE_PATH + "/index.html" && linkPath === "/");
 
     link.classList.toggle("active", isActive);
   });
