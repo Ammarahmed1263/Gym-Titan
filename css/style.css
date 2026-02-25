@@ -1,4 +1,3 @@
-
 #rm-form {
   display: grid;
   grid-template-columns: 1fr;
@@ -41,7 +40,7 @@
 }
 
 .error {
-  color: #ef4444;
+  color: #d32f2f;
   text-align: center;
   margin: 2rem 0;
 }
@@ -124,11 +123,6 @@
   margin-bottom: 1rem;
 }
 
-.formula-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
 
 .formula-item {
   display: flex;
@@ -172,16 +166,99 @@
   margin-top: 0.125rem;
 }
 
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formula-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.formula-card {
+  background: #262626;
+  border: 1px solid #2e2e2e;
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formula-card .name {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.formula-card .value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #d32f2f; /* Match the red from reference */
+}
+
+.percentages-box {
+  background: #262626;
+  border: 1px solid #2e2e2e;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.percentages-header {
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.percentages-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.percentages-header p {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  color: #d9d9d9;
+}
+
+.percentage-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.percentage-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 0.25rem;
+  border-bottom: 1px solid #3c3c3c;
+  font-weight: 500;
+}
+
+.percentage-row:last-child {
+  border-bottom: none;
+}
+
+.percentage-row .label {
+  color: #f1f1f1;
+}
+
+.percentage-row .weight {
+  color: #f1f1f1;
+  font-weight: 700;
+}
 
 @media (min-width: 768px) {
-
-
   .result-value {
     font-size: 2.5rem;
   }
 
-  .formula-grid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  .formula-cards {
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .result-header {
@@ -191,7 +268,6 @@
   #rm-form {
     grid-template-columns: repeat(2, 1fr);
   }
-
 }
 
 @media (min-width: 1200px) {

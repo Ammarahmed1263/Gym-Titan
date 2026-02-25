@@ -1,3 +1,11 @@
+import { dbService } from "./db.js";
+
+let currentUnit = "kg";
+
+async function updateActiveUnit() {
+  currentUnit = (await dbService.getSetting("unit")) || "kg";
+}
+
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
@@ -7,85 +15,107 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   const rmWorker = new Worker("js/worker.js");
   const rmForm = document.querySelector("#rm-form");
   const rmResult = document.querySelector("#rm-result");
 
+  await updateActiveUnit();
+
+  let lastResults = null;
+
+  async function renderResults(result) {
+    if (!result) return;
+    lastResults = result;
+
+
+    const percentages = [95, 90, 85, 80, 75, 70, 65, 60, 55, 50];
+    const percentageRows = percentages
+      .map((p) => {
+        const pWeight = Math.round((result.average * p) / 100);
+        return `
+        <div class="percentage-row">
+          <span class="label">${p}%</span>
+          <span class="weight">${pWeight} ${currentUnit}</span>
+        </div>
+      `;
+      })
+      .join("");
+
+    rmResult.innerHTML = `
+    <div class="results-container">
+      <div class="formula-cards">
+        <div class="formula-card">
+          <span class="name">EPLEY</span>
+          <span class="value">${Math.round(result.epley)}</span>
+        </div>
+        <div class="formula-card">
+          <span class="name">BRZYCKI</span>
+          <span class="value">${Math.round(result.brzycki)}</span>
+        </div>
+        <div class="formula-card">
+          <span class="name">LOMBARDI</span>
+          <span class="value">${Math.round(result.lombardi)}</span>
+        </div>
+        <div class="formula-card">
+          <span class="name">LANDER</span>
+          <span class="value">${Math.round(result.lander)}</span>
+        </div>
+      </div>
+
+      <div class="percentages-box">
+        <div class="percentages-header">
+          <h3>Training Percentages</h3>
+          <p>Based on average 1RM: ${Math.round(result.average)} <span class="unit-label">${currentUnit}</span></p>
+        </div>
+        <div class="percentage-list">
+          ${percentageRows}
+        </div>
+      </div>
+    </div>
+  `;
+  }
+
+  function convertResults(results, toUnit) {
+    const factor = toUnit === "lbs" ? 2.20462 : 1 / 2.20462;
+    const converted = {};
+    for (const key in results) {
+      if (typeof results[key] === "number") {
+        converted[key] = results[key] * factor;
+      } else {
+        converted[key] = results[key];
+      }
+    }
+    return converted;
+  }
+
+
+  window.addEventListener("unitChanged", (e) => {
+    const oldUnit = currentUnit;
+    currentUnit = e.detail.unit;
+
+    if (lastResults && oldUnit !== currentUnit) {
+      lastResults = convertResults(lastResults, currentUnit);
+      renderResults(lastResults);
+    }
+  });
+
   rmForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const weight = document.querySelector("#weight-input").value;
-    const reps = document.querySelector("#reps-input").value;
+    const weightInput = document.querySelector("#weight-input");
+    const repsInput = document.querySelector("#reps-input");
 
+    const weight = parseFloat(weightInput.value);
+    const reps = parseInt(repsInput.value);
+
+    if (!weight || !reps) return;
+
+    rmResult.innerHTML = '<div class="loading">Calculating...</div>';
     rmWorker.postMessage({ weight, reps });
   });
 
   rmWorker.onmessage = function (e) {
-    const result = e.data;
-
-    const confidenceColors = {
-      "very-high": "#22c55e",
-      high: "#3b82f6",
-      moderate: "#f59e0b",
-      low: "#ef4444",
-    };
-
-    const confidenceColor = confidenceColors[result.confidence] || "#6b7280";
-
-    rmResult.innerHTML = `
-    <div class="result-header">
-      <div class="main-result">
-        <span class="result-label">Estimated 1RM</span>
-        <span class="result-value">${result.average} kg</span>
-      </div>
-      <div class="confidence-badge" style="background-color: ${confidenceColor}">
-        ${result.confidence.replace("-", " ")} confidence
-      </div>
-    </div>
-
-    <div class="result-range">
-      <span class="range-label">Range:</span>
-      <span class="range-values">${result.min} - ${result.max} kg</span>
-      <span class="range-spread">(±${(result.range / 2).toFixed(1)} kg)</span>
-    </div>
-
-    <div class="formula-breakdown">
-      <h3>Formula Breakdown</h3>
-      <div class="formula-grid">
-        <div class="formula-item">
-          <span class="formula-name">Brzycki</span>
-          <span class="formula-value">${result.brzycki} kg</span>
-        </div>
-        <div class="formula-item">
-          <span class="formula-name">Epley</span>
-          <span class="formula-value">${result.epley} kg</span>
-        </div>
-        <div class="formula-item">
-          <span class="formula-name">Lander</span>
-          <span class="formula-value">${result.lander} kg</span>
-        </div>
-        <div class="formula-item">
-          <span class="formula-name">Lombardi</span>
-          <span class="formula-value">${result.lombardi} kg</span>
-        </div>
-      </div>
-    </div>
-
-    ${
-      result.variationPercent > 5
-        ? `
-      <div class="accuracy-note">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M8 1L1 15H15L8 1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-          <path d="M8 6V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="8" cy="12" r="0.5" fill="currentColor"/>
-        </svg>
-        <span>Formula variation is ${result.variationPercent}%. Consider testing with fewer reps for more accuracy.</span>
-      </div>
-    `
-        : ""
-    }
-  `;
+    renderResults(e.data);
   };
 });

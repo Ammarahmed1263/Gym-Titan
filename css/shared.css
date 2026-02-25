@@ -205,9 +205,9 @@ button:hover {
 .toggle-buttons button {
   flex: 1;
   background-color: transparent;
-  color: #9ca3af;
+  color: #fff;
   min-height: 32px;
-  font-size: 0.7rem;
+  font-size: 0.9rem;
   font-weight: 700;
   padding: 0;
   border: none;
