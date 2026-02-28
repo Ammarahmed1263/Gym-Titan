@@ -1,6 +1,9 @@
 import { dbService } from "./db.js";
 
 let currentUnit = "kg";
+let rmWorker = null;
+let lastResults = null;
+let unitListener = null;
 
 async function updateActiveUnit() {
   currentUnit = (await dbService.getSetting("unit")) || "kg";
@@ -15,19 +18,21 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", async function () {
-  const rmWorker = new Worker("js/worker.js");
+export async function init() {
   const rmForm = document.querySelector("#rm-form");
   const rmResult = document.querySelector("#rm-result");
 
-  await updateActiveUnit();
+  if (!rmForm || !rmResult) return;
 
-  let lastResults = null;
+  await updateActiveUnit();
+  lastResults = null;
+
+  if (rmWorker) rmWorker.terminate();
+  rmWorker = new Worker("js/worker.js");
 
   async function renderResults(result) {
     if (!result) return;
     lastResults = result;
-
 
     const percentages = [95, 90, 85, 80, 75, 70, 65, 60, 55, 50];
     const percentageRows = percentages
@@ -89,8 +94,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     return converted;
   }
 
-
-  window.addEventListener("unitChanged", (e) => {
+  if (unitListener) window.removeEventListener("unitChanged", unitListener);
+  unitListener = (e) => {
     const oldUnit = currentUnit;
     currentUnit = e.detail.unit;
 
@@ -98,7 +103,8 @@ document.addEventListener("DOMContentLoaded", async function () {
       lastResults = convertResults(lastResults, currentUnit);
       renderResults(lastResults);
     }
-  });
+  };
+  window.addEventListener("unitChanged", unitListener);
 
   rmForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -118,4 +124,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   rmWorker.onmessage = function (e) {
     renderResults(e.data);
   };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.querySelector("#rm-form")) {
+    init();
+  }
 });

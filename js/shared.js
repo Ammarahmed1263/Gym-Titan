@@ -53,10 +53,8 @@ async function navigateTo(url, addHistory = true) {
   const appContainer = document.querySelector("#app");
 
   try {
-    // If we're navigating to a root-like path, ensure it has the BASE_PATH
     let fetchUrl = url.startsWith(BASE_PATH) ? url : BASE_PATH + url;
 
-    // Safety check: don't double up base path
     if (BASE_PATH && fetchUrl.startsWith(BASE_PATH + BASE_PATH)) {
       fetchUrl = fetchUrl.replace(BASE_PATH + BASE_PATH, BASE_PATH);
     }
@@ -85,8 +83,34 @@ async function navigateTo(url, addHistory = true) {
 
     await updateUnitUI();
     initDefaultDates();
+
+    await initPageModule(fetchUrl);
   } catch (error) {
     console.log("Navigation failed: ", error);
+  }
+}
+
+async function initPageModule(url) {
+  const routeMap = {
+    profile: "./profile.js",
+    exercises: "./exercises.js",
+  };
+
+  let modulePath = "./app.js"; // default = home page
+  for (const [key, path] of Object.entries(routeMap)) {
+    if (url.includes(key)) {
+      modulePath = path;
+      break;
+    }
+  }
+
+  try {
+    const module = await import(modulePath);
+    if (module.init) {
+      await module.init();
+    }
+  } catch (err) {
+    console.log("Module init failed: ", err);
   }
 }
 

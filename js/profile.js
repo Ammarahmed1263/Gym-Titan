@@ -3,7 +3,9 @@ import { dbService } from "./db.js";
 const KG_TO_LBS = 2.205;
 const LBS_TO_KG = 1 / KG_TO_LBS;
 
-document.addEventListener("DOMContentLoaded", async () => {
+let unitListener = null;
+
+export async function init() {
   const weightForm = document.getElementById("weight-form");
   const weightInput = document.getElementById("weight-input");
   const dateInput = document.getElementById("date-input");
@@ -11,6 +13,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const heightInput = document.getElementById("height-input");
   const bmiValue = document.getElementById("bmi-value");
   const ratioValue = document.getElementById("ratio-value");
+
+  if (!weightForm || !historyList) return;
 
   let currentUnit = (await dbService.getSetting("unit")) || "kg";
 
@@ -88,10 +92,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     await updateStats();
   });
 
-  window.addEventListener("unitChanged", (e) => {
+  if (unitListener) window.removeEventListener("unitChanged", unitListener);
+  unitListener = (e) => {
     currentUnit = e.detail.unit;
     loadHistory();
-  });
+  };
+  window.addEventListener("unitChanged", unitListener);
 
   async function loadHistory() {
     const weights = await dbService.getWeights();
@@ -185,4 +191,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   loadHistory();
   await updateStats();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("weight-form")) {
+    init();
+  }
 });
