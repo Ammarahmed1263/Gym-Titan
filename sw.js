@@ -1,4 +1,4 @@
-const CACHE_KEY = "titan-v1";
+const CACHE_KEY = "titan-v1.1";
 
 const STATIC_ASSETS = [
   "./",
