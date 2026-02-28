@@ -14,6 +14,7 @@ const STATIC_ASSETS = [
   "./js/shared.js",
   "./js/offline.js",
   "./js/profile.js",
+  "./js/exercises.js",
   "./css/style.css",
   "./css/exercises.css",
   "./css/profile.css",
