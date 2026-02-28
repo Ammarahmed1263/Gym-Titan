@@ -41,7 +41,7 @@ class DBService {
     const store = tx.objectStore("weight_history");
     await store.add({
       weight: parseFloat(weightKg),
-      date: new Date(date).toISOString(),
+      date: date,
       timestamp: Date.now(),
     });
     await tx.complete;
@@ -118,7 +118,7 @@ class DBService {
       sets: parseInt(sets),
       reps: parseInt(reps),
       weight: parseFloat(weightKg),
-      date: new Date(date).toISOString(),
+      date: date,
       timestamp: Date.now(),
     });
     await tx.complete;

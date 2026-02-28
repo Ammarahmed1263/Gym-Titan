@@ -3,7 +3,7 @@ import { dbService } from "./db.js";
 const KG_TO_LBS = 2.205;
 const LBS_TO_KG = 1 / KG_TO_LBS;
 
-let unitListener = null;
+let abortController = null;
 
 export async function init() {
   const weightForm = document.getElementById("weight-form");
@@ -15,6 +15,10 @@ export async function init() {
   const ratioValue = document.getElementById("ratio-value");
 
   if (!weightForm || !historyList) return;
+
+  if (abortController) abortController.abort();
+  abortController = new AbortController();
+  const { signal } = abortController;
 
   let currentUnit = (await dbService.getSetting("unit")) || "kg";
 
@@ -56,48 +60,62 @@ export async function init() {
   }
 
   let heightTimer;
-  heightInput.addEventListener("input", () => {
-    clearTimeout(heightTimer);
-    heightTimer = setTimeout(async () => {
-      const val = parseFloat(heightInput.value);
-      if (val && val >= 100 && val <= 250) {
-        await dbService.setHeight(val);
-        await updateStats();
-      }
-    }, 500);
-  });
+  heightInput.addEventListener(
+    "input",
+    () => {
+      clearTimeout(heightTimer);
+      heightTimer = setTimeout(async () => {
+        const val = parseFloat(heightInput.value);
+        if (val && val >= 100 && val <= 250) {
+          await dbService.setHeight(val);
+          await updateStats();
+        }
+      }, 500);
+    },
+    { signal },
+  );
 
-  weightForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const rawWeight = parseFloat(weightInput.value);
-    if (!rawWeight) return;
+  weightForm.addEventListener(
+    "submit",
+    async (e) => {
+      e.preventDefault();
+      const rawWeight = parseFloat(weightInput.value);
+      if (!rawWeight) return;
 
-    const weightInKg = toKg(rawWeight);
-    const date = dateInput.value || new Date().toISOString().split("T")[0];
-    await dbService.addWeight(weightInKg, date);
-    weightInput.value = "";
-    loadHistory();
-    await updateStats();
-  });
+      const weightInKg = toKg(rawWeight);
+      const date = dateInput.value || new Date().toISOString().split("T")[0];
+      await dbService.addWeight(weightInKg, date);
+      weightInput.value = "";
+      loadHistory();
+      await updateStats();
+    },
+    { signal },
+  );
 
-  historyList.addEventListener("click", async (e) => {
-    const deleteBtn = e.target.closest(".delete-entry-btn");
-    if (!deleteBtn) return;
+  historyList.addEventListener(
+    "click",
+    async (e) => {
+      const deleteBtn = e.target.closest(".delete-entry-btn");
+      if (!deleteBtn) return;
 
-    const id = Number(deleteBtn.dataset.id);
-    if (!id) return;
+      const id = Number(deleteBtn.dataset.id);
+      if (!id) return;
 
-    await dbService.deleteWeight(id);
-    loadHistory();
-    await updateStats();
-  });
+      await dbService.deleteWeight(id);
+      loadHistory();
+      await updateStats();
+    },
+    { signal },
+  );
 
-  if (unitListener) window.removeEventListener("unitChanged", unitListener);
-  unitListener = (e) => {
-    currentUnit = e.detail.unit;
-    loadHistory();
-  };
-  window.addEventListener("unitChanged", unitListener);
+  window.addEventListener(
+    "unitChanged",
+    (e) => {
+      currentUnit = e.detail.unit;
+      loadHistory();
+    },
+    { signal },
+  );
 
   async function loadHistory() {
     const weights = await dbService.getWeights();

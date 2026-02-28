@@ -3,7 +3,13 @@ import { dbService } from "./db.js";
 const KG_TO_LBS = 2.205;
 const LBS_TO_KG = 1 / KG_TO_LBS;
 
-let unitListener = null;
+let abortController = null;
+
+function escapeHTML(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
 
 export async function init() {
   const exerciseForm = document.getElementById("exercise-form");
@@ -11,6 +17,10 @@ export async function init() {
   const emptyText = document.querySelector(".empty-text");
 
   if (!exerciseForm || !exerciseLog) return;
+
+  if (abortController) abortController.abort();
+  abortController = new AbortController();
+  const { signal } = abortController;
 
   let currentUnit = (await dbService.getSetting("unit")) || "kg";
 
@@ -26,31 +36,39 @@ export async function init() {
       : parseFloat(value);
   }
 
-  exerciseForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  exerciseForm.addEventListener(
+    "submit",
+    async (e) => {
+      e.preventDefault();
 
-    const name = document.getElementById("exercise-name").value;
-    const sets = document.getElementById("exercise-sets").value;
-    const reps = document.getElementById("exercise-reps").value;
-    const rawWeight = parseFloat(
-      document.getElementById("exercise-weight").value,
-    );
-    const date =
-      document.getElementById("exercise-date").value ||
-      new Date().toISOString().split("T")[0];
+      const name = document.getElementById("exercise-name").value.trim();
+      const sets = document.getElementById("exercise-sets").value;
+      const reps = document.getElementById("exercise-reps").value;
+      const rawWeight = parseFloat(
+        document.getElementById("exercise-weight").value,
+      );
+      const date =
+        document.getElementById("exercise-date").value ||
+        new Date().toISOString().split("T")[0];
 
-    const weightInKg = toKg(rawWeight);
-    await dbService.addExercise(name, sets, reps, weightInKg, date);
-    exerciseForm.reset();
-    renderExercises();
-  });
+      if (!name) return;
 
-  if (unitListener) window.removeEventListener("unitChanged", unitListener);
-  unitListener = (e) => {
-    currentUnit = e.detail.unit;
-    renderExercises();
-  };
-  window.addEventListener("unitChanged", unitListener);
+      const weightInKg = toKg(rawWeight);
+      await dbService.addExercise(name, sets, reps, weightInKg, date);
+      exerciseForm.reset();
+      renderExercises();
+    },
+    { signal },
+  );
+
+  window.addEventListener(
+    "unitChanged",
+    (e) => {
+      currentUnit = e.detail.unit;
+      renderExercises();
+    },
+    { signal },
+  );
 
   async function renderExercises() {
     const exercises = await dbService.getExercises();
@@ -95,7 +113,7 @@ export async function init() {
               (exercise) => `
             <article class="exercise-record">
               <div class="exercise-info">
-                <p class="exercise-name">${exercise.name}</p>
+                <p class="exercise-name">${escapeHTML(exercise.name)}</p>
                 <p class="exercise-details"><span class="exercise-sets">${exercise.sets}</span> sets x <span class="exercise-reps">${exercise.reps}</span> reps @ <span class="exercise-weight">${toDisplayWeight(exercise.weight)}</span> ${currentUnit}</p>
               </div>
               <div class="exercise-actions">
@@ -119,14 +137,18 @@ export async function init() {
       .join("");
   }
 
-  exerciseLog.addEventListener("click", async (e) => {
-    if (e.target.closest(".delete-exercise-btn")) {
-      const btn = e.target.closest(".delete-exercise-btn");
-      const id = Number(btn.dataset.id);
-      await dbService.deleteExercise(id);
-      renderExercises();
-    }
-  });
+  exerciseLog.addEventListener(
+    "click",
+    async (e) => {
+      if (e.target.closest(".delete-exercise-btn")) {
+        const btn = e.target.closest(".delete-exercise-btn");
+        const id = Number(btn.dataset.id);
+        await dbService.deleteExercise(id);
+        renderExercises();
+      }
+    },
+    { signal },
+  );
 
   renderExercises();
 }

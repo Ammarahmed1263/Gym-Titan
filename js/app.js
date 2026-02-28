@@ -3,19 +3,10 @@ import { dbService } from "./db.js";
 let currentUnit = "kg";
 let rmWorker = null;
 let lastResults = null;
-let unitListener = null;
+let abortController = null;
 
 async function updateActiveUnit() {
   currentUnit = (await dbService.getSetting("unit")) || "kg";
-}
-
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("sw.js")
-      .then((reg) => console.log("service worker registered", reg))
-      .catch((err) => console.log("worker registration failed", err));
-  });
 }
 
 export async function init() {
@@ -23,6 +14,10 @@ export async function init() {
   const rmResult = document.querySelector("#rm-result");
 
   if (!rmForm || !rmResult) return;
+
+  if (abortController) abortController.abort();
+  abortController = new AbortController();
+  const { signal } = abortController;
 
   await updateActiveUnit();
   lastResults = null;
@@ -94,32 +89,38 @@ export async function init() {
     return converted;
   }
 
-  if (unitListener) window.removeEventListener("unitChanged", unitListener);
-  unitListener = (e) => {
-    const oldUnit = currentUnit;
-    currentUnit = e.detail.unit;
+  window.addEventListener(
+    "unitChanged",
+    (e) => {
+      const oldUnit = currentUnit;
+      currentUnit = e.detail.unit;
 
-    if (lastResults && oldUnit !== currentUnit) {
-      lastResults = convertResults(lastResults, currentUnit);
-      renderResults(lastResults);
-    }
-  };
-  window.addEventListener("unitChanged", unitListener);
+      if (lastResults && oldUnit !== currentUnit) {
+        lastResults = convertResults(lastResults, currentUnit);
+        renderResults(lastResults);
+      }
+    },
+    { signal },
+  );
 
-  rmForm.addEventListener("submit", (e) => {
-    e.preventDefault();
+  rmForm.addEventListener(
+    "submit",
+    (e) => {
+      e.preventDefault();
 
-    const weightInput = document.querySelector("#weight-input");
-    const repsInput = document.querySelector("#reps-input");
+      const weightInput = document.querySelector("#weight-input");
+      const repsInput = document.querySelector("#reps-input");
 
-    const weight = parseFloat(weightInput.value);
-    const reps = parseInt(repsInput.value);
+      const weight = parseFloat(weightInput.value);
+      const reps = parseInt(repsInput.value);
 
-    if (!weight || !reps) return;
+      if (!weight || !reps) return;
 
-    rmResult.innerHTML = '<div class="loading">Calculating...</div>';
-    rmWorker.postMessage({ weight, reps });
-  });
+      rmResult.innerHTML = '<div class="loading">Calculating...</div>';
+      rmWorker.postMessage({ weight, reps });
+    },
+    { signal },
+  );
 
   rmWorker.onmessage = function (e) {
     renderResults(e.data);
