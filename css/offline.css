@@ -43,10 +43,6 @@ a {
   transition: transform 0.2s ease;
 }
 
-a:hover {
-  transform: scale(1.05);
-}
-
 .buttons-container {
   display: flex;
   gap: 1rem;
@@ -55,7 +51,6 @@ a:hover {
 button.reload {
   background-color: transparent;
   font-size: 0.7rem;
-
   border: 2px solid #d32f2f;
   color: #d32f2f;
   padding: 1rem 2rem;
@@ -67,10 +62,16 @@ button.reload {
   transition: all 0.2s ease;
 }
 
-button.reload:hover {
-  background-color: #d32f2f;
-  color: white;
-  transform: scale(1.05);
+@media (hover: hover) {
+  a:hover {
+    transform: scale(1.05);
+  }
+
+  button.reload:hover {
+    background-color: #d32f2f;
+    color: white;
+    transform: scale(1.05);
+  }
 }
 
 @media (min-width: 768px) {

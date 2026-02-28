@@ -43,8 +43,10 @@ a {
   transition: transform 0.2s ease;
 }
 
-a:hover {
-  transform: scale(1.05);
+@media (hover: hover) {
+  a:hover {
+    transform: scale(1.05);
+  }
 }
 
 .buttons-container {
