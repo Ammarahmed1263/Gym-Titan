@@ -32,7 +32,7 @@ self.addEventListener("install", (e) => {
       } catch (error) {
         console.log("add to cache failed", error);
       }
-    })(),
+    })()
   );
 });
 
@@ -41,24 +41,32 @@ self.addEventListener("activate", (e) => {
     (async () => {
       try {
         const keys = await caches.keys();
-
-        return Promise.all(
+        await Promise.all(
           keys
             .filter((key) => key !== CACHE_KEY)
-            .map((key) => caches.delete(key)),
+            .map((key) => caches.delete(key))
         );
+
+        await self.clients.claim(); 
       } catch (error) {
         console.log("error deleting cache: ", error);
       }
-    })(),
+    })()
   );
 });
 
 self.addEventListener("fetch", (e) => {
+  if (e.request.method !== "GET") {
+    return;
+  }
+  if (!e.request.url.startsWith('http')) {
+      return;
+  }
+
   e.respondWith(
     (async () => {
       try {
-        const cachedRes = await caches.match(e.request);
+        const cachedRes = await caches.match(e.request, { ignoreSearch: true });
         if (cachedRes) return cachedRes;
 
         let networkRes = await fetch(e.request);
@@ -83,6 +91,6 @@ self.addEventListener("fetch", (e) => {
           headers: { "Content-Type": "text/plain" },
         });
       }
-    })(),
+    })()
   );
 });
