@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="../css/shared.css" />
 
     <script type="module" src="../js/shared.js" defer></script>
+    <script type="module" src="../js/profile.js" defer></script>
+
 
     <link rel="manifest" href="../manifest.json" />
 
@@ -146,16 +148,16 @@
         <p>Track your body metrics and progress.</p>
       </header>
 
-      <main class="main-content">
+      <article class="main-content">
         <section class="stats-grid">
           <article class="stats-card">
             <p>BMI</p>
-            <h3>--</h3>
+            <h3 id="bmi-value">--</h3>
           </article>
 
           <article class="stats-card">
             <p>WEIGHT/HEIGHT RATIO</p>
-            <h3>--</h3>
+            <h3 id="ratio-value">--</h3>
           </article>
 
           <article class="height-card">

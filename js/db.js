@@ -54,6 +54,14 @@ class DBService {
     return await store.getAll();
   }
 
+  async deleteWeight(id) {
+    await this.init();
+    const tx = this.db.transaction("weight_history", "readwrite");
+    const store = tx.objectStore("weight_history");
+    await store.delete(id);
+    await tx.complete;
+  }
+
   async getLatestWeight() {
     await this.init();
     const tx = this.db.transaction("weight_history", "readonly");
