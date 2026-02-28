@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   function convertResults(results, toUnit) {
-    const factor = toUnit === "lbs" ? 2.20462 : 1 / 2.20462;
+    const factor = toUnit === "lbs" ? 2.205 : 1 / 2.205;
     const converted = {};
     for (const key in results) {
       if (typeof results[key] === "number") {
