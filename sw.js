@@ -13,6 +13,7 @@ const STATIC_ASSETS = [
   "./js/idb.js",
   "./js/shared.js",
   "./js/offline.js",
+  "./js/profile.js",
   "./css/style.css",
   "./css/exercises.css",
   "./css/profile.css",

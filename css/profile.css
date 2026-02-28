@@ -70,12 +70,14 @@ body {
   border-radius: 0.5rem;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
 }
 
 .stats-card p {
   color: #9ca3af;
   font-size: 0.8rem;
+  text-align: center;
 }
 
 .stats-card h3 {

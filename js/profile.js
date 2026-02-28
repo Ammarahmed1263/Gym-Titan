@@ -1,5 +1,8 @@
 import { dbService } from "./db.js";
 
+const KG_TO_LBS = 2.205;
+const LBS_TO_KG = 1 / KG_TO_LBS;
+
 document.addEventListener("DOMContentLoaded", async () => {
   const weightForm = document.getElementById("weight-form");
   const weightInput = document.getElementById("weight-input");
@@ -9,9 +12,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   const bmiValue = document.getElementById("bmi-value");
   const ratioValue = document.getElementById("ratio-value");
 
+  let currentUnit = (await dbService.getSetting("unit")) || "kg";
+
   const savedHeight = await dbService.getHeight();
   if (savedHeight) {
     heightInput.value = savedHeight;
+  }
+
+  function toDisplayWeight(kg) {
+    return currentUnit === "lbs"
+      ? (kg * KG_TO_LBS).toFixed(1)
+      : parseFloat(kg).toFixed(1);
+  }
+
+  function toKg(value) {
+    return currentUnit === "lbs"
+      ? parseFloat(value) * LBS_TO_KG
+      : parseFloat(value);
   }
 
   async function updateStats() {
@@ -48,9 +65,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   weightForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const weight = weightInput.value;
+    const rawWeight = parseFloat(weightInput.value);
+    if (!rawWeight) return;
+
+    const weightInKg = toKg(rawWeight);
     const date = dateInput.value || new Date().toISOString().split("T")[0];
-    await dbService.addWeight(weight, date);
+    await dbService.addWeight(weightInKg, date);
     weightInput.value = "";
     loadHistory();
     await updateStats();
@@ -68,6 +88,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     await updateStats();
   });
 
+  window.addEventListener("unitChanged", (e) => {
+    currentUnit = e.detail.unit;
+    loadHistory();
+  });
+
   async function loadHistory() {
     const weights = await dbService.getWeights();
     historyList.innerHTML = "";
@@ -78,12 +103,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    weights.sort((a, b) => new Date(b.date) - new Date(a.date));
+    weights.sort((a, b) => {
+      const dateDiff = new Date(b.date) - new Date(a.date);
+      return dateDiff !== 0 ? dateDiff : b.timestamp - a.timestamp;
+    });
 
     weights.forEach((entry, index) => {
+      const displayWeight = toDisplayWeight(entry.weight);
       const prevEntry = weights[index + 1];
       const change = prevEntry
-        ? (entry.weight - prevEntry.weight).toFixed(1)
+        ? (
+            toDisplayWeight(entry.weight) - toDisplayWeight(prevEntry.weight)
+          ).toFixed(1)
         : null;
       const changeSign = change > 0 ? "+" : "";
       const changeColor =
@@ -100,13 +131,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       article.innerHTML = `
         <div class="record-info">
           <div class="record-weight">
-            <p>${entry.weight}</p>
-            <span>kg</span>
+            <p>${displayWeight}</p>
+            <span>${currentUnit}</span>
           </div>
           <p class="record-date">${formattedDate}</p>
         </div>
         <div class="record-actions">
-          ${change !== null ? `<span class="record-change" style="color: ${changeColor}">${changeSign}${change} kg</span>` : ""}
+          ${change !== null ? `<span class="record-change" style="color: ${changeColor}">${changeSign}${change} ${currentUnit}</span>` : ""}
           <button type="button" class="delete-entry-btn" data-id="${entry.id}">
             <svg
               class="delete-entry-icon"
