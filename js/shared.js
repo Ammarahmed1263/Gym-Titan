@@ -1,6 +1,14 @@
 import { dbService } from "./db.js";
 
-// Detect if we're running in a subdirectory (like on GitHub Pages)
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("sw.js")
+      .then((reg) => console.log("service worker registered", reg))
+      .catch((err) => console.log("worker registration failed", err));
+  });
+}
+
 const BASE_PATH = window.location.pathname.includes("/Gym-Titan")
   ? "/Gym-Titan"
   : "";

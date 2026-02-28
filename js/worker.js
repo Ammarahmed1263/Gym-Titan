@@ -1,7 +1,6 @@
 self.onmessage = function (e) {
   const { weight, reps } = e?.data;
 
-  console.log("function called: ", weight, reps);
   if (reps > 10) {
     console.warn("Accuracy decreases significantly above 10 reps");
   }
