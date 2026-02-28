@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../css/shared.css" />
 
     <script type="module" src="../js/shared.js" defer></script>
+    <script type="module" src="../js/exercises.js" defer></script>
 
     <link rel="manifest" href="../manifest.json" />
 
@@ -54,7 +55,7 @@
                 <circle cx="16" cy="13" r="1" fill="currentColor"></circle>
                 <circle cx="16" cy="17" r="1" fill="currentColor"></circle>
               </svg>
-              <span>Home</span>
+              <span>Calculator</span>
             </a>
           </li>
           <li>
@@ -142,23 +143,25 @@
 
     <main id="app" class="page-area">
       <header>
-        <h1>Workout Log</h1>
+        <h1>Exercises Log</h1>
         <p>Record your sets, reps, and weights.</p>
       </header>
 
-      <form id="workout-form">
-        <input type="text" placeholder="Exercise Name (e.g. Bench Press)" />
+      <form id="exercise-form">
+        <input type="text" placeholder="Exercise Name (e.g. Bench Press)" id="exercise-name" required/>
         <div class="input-group">
-          <input type="number" placeholder="Reps" />
-          <input type="number" placeholder="Sets" />
+          <input type="number" placeholder="Sets" id="exercise-sets" required/>
+          <input type="number" placeholder="Reps" id="exercise-reps" required/>
           <input
             type="number"
             placeholder="Weight"
             data-input-type="weight"
             min="1"
+            id="exercise-weight"
+            required
           />
         </div>
-        <input type="date" placeholder="Date" />
+        <input type="date" placeholder="Date" id="exercise-date" required/>
         <button type="submit">
           <svg
             class="log-set-icon"
@@ -188,9 +191,9 @@
         </button>
       </form>
 
-      <section id="workout-log">
+      <section id="exercise-log">
         <p class="empty-text">
-          No workouts logged yet. Time to lift some weights!
+          No exercises logged yet. Time to lift some weights!
         </p>
       </section>
     </main>

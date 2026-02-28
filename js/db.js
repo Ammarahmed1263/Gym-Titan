@@ -124,6 +124,14 @@ class DBService {
     await tx.complete;
   }
 
+  async deleteExercise(id) {
+    await this.init();
+    const tx = this.db.transaction("exercises", "readwrite");
+    const store = tx.objectStore("exercises");
+    await store.delete(id);
+    await tx.complete;
+  }
+
   async getExercises() {
     await this.init();
     const tx = this.db.transaction("exercises", "readonly");

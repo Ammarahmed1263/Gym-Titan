@@ -17,7 +17,7 @@ header {
   margin-bottom: 1.5rem;
 }
 
-#workout-form {
+#exercise-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -37,12 +37,34 @@ header {
   flex: 1;
 }
 
-#workout-log {
+#exercise-log {
   margin-top: 2rem;
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
-  text-align: center;
-  gap: 1rem;
+  gap: 1.5rem;
+}
+
+.exercise-date-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.exercise-date-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #9ca3af;
+  padding-bottom: 0.25rem;
+}
+
+.date-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
 }
 
 .empty-text {
@@ -51,7 +73,7 @@ header {
   color: #9ca3af;
 }
 
-#workout-form button[type="submit"] {
+#exercise-form button[type="submit"] {
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -62,4 +84,71 @@ header {
   width: 1.5rem;
   height: 1.5rem;
   color: #fff;
+}
+
+.exercise-record {
+  background-color: #1a1a1a;
+  border: 1px solid #2e2e2e;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.exercise-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.exercise-name {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.exercise-details {
+  display: flex;
+  gap: 0.5rem;
+  color: #9ca3af;
+}
+
+.exercise-sets {
+  color: #d32f2f;
+}
+
+.exercise-reps {
+  color: #d32f2f;
+}
+
+.exercise-weight {
+  color: #fff;
+  font-weight: bold;
+}
+
+.delete-exercise-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.delete-exercise-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .delete-exercise-btn:hover {
+    background-color: inherit;
+    color: #d32f2f;
+  }
+
+  .delete-exercise-icon:hover {
+    color: #d32f2f;
+  }
 }
