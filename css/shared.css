@@ -159,13 +159,13 @@ button {
 
 .main-nav a.active,
 .main-nav a:active {
-  color: #d32f2f;
+  color: #ff5252;
   background-color: unset;
 }
 
 .main-nav a.active .sidebar-icon,
 .main-nav a:active .sidebar-icon {
-  color: #d32f2f;
+  color: #ff5252;
 }
 
 .sidebar-footer {
